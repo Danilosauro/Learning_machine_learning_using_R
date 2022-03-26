@@ -1,0 +1,75 @@
+
+#chamando o arquivo
+homicidios<-read.csv(file="C:/Users/decer/OneDrive/Área de Trabalho/ARQUIVOS_DANILO/CURSOS/homicidios_dados.csv",sep=";",dec=",")
+
+#visualizando os tipos de dados e variáveis
+str(homicidios)
+#visualizando os dados
+View(homicidios)
+
+#visualizando as estatísticas dos dados 
+summary(homicidios$X2014)
+
+#visualizando os dados 
+glimpse(homicidios)
+
+#unindo dados similares em uma variável única
+mortes<-c(homicidios$X2014,homicidios$X2015,homicidios$X2016,homicidios$X2017,homicidios$X2018)
+mortes
+
+#transformando os dados do tipo string em fatores para poder operar matematicamente com eles 
+estados<-c(rep(homicidios$Sigla,5))
+estados <-factor(estados)
+
+estados 
+
+#primeiro plot (unidades da federação e número de mortes violentas )
+library(RColorBrewer)
+plot(estados,mortes,xlab="Unidades da federação", ylab="mortes violentas",main="Homicídios no Brasil nos últimos 5")
+
+#Segundo plot(boxplot para visualização de medidas de tendência central)
+boxplot(homicidios$X2014,homicidios$X2015,xlab="2014 e 2015",ylab="mortes", main="BR")
+sd(homicidios$X2014)
+
+
+
+#metodologia aplicada ao machine learning com ggplot e caTools
+
+#Tratamento dos dados: organizando em ordem decrescente, mudança da orientação do gráfico e criação de variável de trabalho
+tentativa1<-homicidios %>% group_by(homicidios$Sigla) %>% 
+  summarise(n=sum(homicidios$X2014)) %>% arrange(desc(n)) %>%
+  top_n(27)
+
+tentativa2<-homicidios %>% group_by(homicidios$Sigla) %>% 
+  summarise(n=sum(homicidios$X2015)) %>% arrange(desc(n)) %>%
+  top_n(27)
+
+names(tentativa1)<-c("estado","mortes violentas")
+names(tentativa2)<-c("estado","mortes violentas")
+# construção do gráfico final
+
+par(mfrow=c(2,2))
+tentativa1
+ggplot(tentativa1,aes(x=reorder(homicidios$Sigla,homicidios$X2014),y=homicidios$X2014))+
+  geom_bar(stat = "identity",fill=2)+
+  coord_flip()+
+  labs(x="Unidade da Federação",y="Mortes violentas em 2014", title = "                            Violência no Brasil")
+
+tentativa2
+ggplot(tentativa1,aes(x=reorder(homicidios$Sigla,homicidios$X2015),y=homicidios$X2015))+
+  geom_bar(stat = "identity",fill=2)+
+  coord_flip()+
+  labs(x="Unidade da Federação",y="Mortes violentas em 2015", title = "                                               Violêcia no Brasil")
+
+# CRIAÇÃO DE UM MODELO DE APRENDIZADO DE MÁQUINA KNN
+
+
+library(caTools)
+
+
+
+tentativa2<-homicidios
+boxplot(tentativa2)
+set.seed(123)
+
+
